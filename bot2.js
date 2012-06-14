@@ -1,6 +1,5 @@
-var a = Math.cos(0);
-
-log("Current Time is: "+gameTime.elapsedTime);
 function main(){
-	
+	//This is the main function
+	//I will get this to work
+	log("Hello\n");
 }

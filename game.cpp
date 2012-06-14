@@ -4,8 +4,8 @@ game* self;
 
 game::game(int argc, char* argv[]){
 	HandleScope scope;
-	gameGlobals *glob = new gameGlobals();
-	Handle<ObjectTemplate> global = glob->getTemplate();
+	gameGlobals::setUpGolbals();
+	Handle<ObjectTemplate> global = gameGlobals::global;
 	
 	if(argc > 2){
 		numBots = argc-1;

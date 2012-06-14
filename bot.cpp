@@ -3,6 +3,8 @@
 using namespace v8;
 using namespace std;
 
+jsbot *selfBot;
+
 jsbot::jsbot(){
 	pos = vector<double>(50,50);
 	vel = vector<double>(0,0);
@@ -65,7 +67,8 @@ void jsbot::init(Handle<ObjectTemplate> global){
 	Local<Value> result = script->Run();
 	if(result.IsEmpty()){
 		String::Utf8Value error(tryCatch.Exception());
-		printf("\n%s \n", *error);
+		printf("%s had an error\n %s \n\n", name.c_str(), *error);
+		exit(3);
 	}
 	
 	free(jsSource);
@@ -75,9 +78,12 @@ void jsbot::init(Handle<ObjectTemplate> global){
 
 void jsbot::setupBotTemplate(Handle<ObjectTemplate> global){
 	bot = ObjectTemplate::New();
-	global->Set(String::New("bot"), bot, ReadOnly);
 	
-}
+	selfBot = this;
+	
+	global->Set(String::New("bot"), bot, ReadOnly);
+};
+
 
 jsbot::~jsbot(){
 	context.Dispose();

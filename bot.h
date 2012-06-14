@@ -1,3 +1,6 @@
+#ifndef _BOT_H_
+#define _BOT_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -7,9 +10,7 @@
 #include <math.h>
 #include "v8.h"
 #include "vector.h"
-
-#ifndef _BOT_H_
-#define _BOT_H_
+#include "vectorTemplate.h"
 
 using namespace v8;
 using namespace std;
@@ -34,10 +35,12 @@ class jsbot{
 		string src;
 		
 		void init(Handle<ObjectTemplate>);
+		void update(double eTime);
 
 	private:
 		Persistent<Context> context;
 		Local<ObjectTemplate> bot;
+		
 		void setupBotTemplate(Handle<ObjectTemplate>);
 		
 };

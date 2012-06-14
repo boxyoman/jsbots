@@ -1,12 +1,13 @@
-#include "bot.h"
-#include "gameTemplate.h"
+#ifndef _GAME_H_
+#define _GAME_H_
+
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <GLUT/glut.h>
 #include <OpenGL/glext.h>
+#include "bot.h"
+#include "gameTemplate.h"
 
-#ifndef _GAME_H_
-#define _GAME_H_
 
 using namespace v8;
 using namespace std;
