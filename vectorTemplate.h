@@ -20,6 +20,8 @@ namespace vectorTemplate{
 	
 	vector<double> getVectorFromObject(Handle<Object>);
 	
+	Handle<ObjectTemplate> makeVectorObjectTemplate(vector<double>* instVect, PropertyAttribute attributes);
+	
 	Handle<Value> getVectorX(Local<String> property, const AccessorInfo &info);
 	void setVectorX(Local<String> property, Local<Value> value, const AccessorInfo &info);
 	Handle<Value> getVectorY(Local<String> property, const AccessorInfo &info);
@@ -27,6 +29,8 @@ namespace vectorTemplate{
 	
 	Handle<Value> addVectors(const Arguments &args);
 	Handle<Value> subVectors(const Arguments &args);
+	Handle<Value> distanceVectors(const Arguments &args);
+	Handle<Value> magVectors(const Arguments &args);
 };
 
 #endif

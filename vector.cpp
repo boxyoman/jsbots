@@ -18,6 +18,43 @@ template <typename type> vector<type> vector<type>::operator - (vector<type> a){
 	return temp;
 };
 
+template <typename type> vector<type> vector<type>::operator * (double a){
+	vector<type> temp(x*a, y*a);
+	return temp;
+};
+template <typename type> vector<type> vector<type>::operator * (vector<type> a){
+	vector<type> temp(x*a.x, y*a.y);
+	return temp;
+};
+
+template <typename type> vector<type> vector<type>::sign(){
+	vector<type> temp(x, y);
+	if(x>0){
+		temp.x = 1;
+	}else{
+		temp.x = -1;
+	}
+	if(y>0){
+		temp.y = 1;
+	}else{
+		temp.y = -1;
+	}
+	return temp;
+};
+
+template <typename type> double vector<type>::angle (vector<type> a){
+	double temp = atan2(a.x - x, a.y - y);
+	return temp;
+};
+
+template <typename type> double vector<type>::distance (vector<type> a){
+	double temp = sqrt((a.x - x)*(a.x - x) + (a.y - y)*(a.y - y));
+	return temp;
+};
+template <typename type> double vector<type>::mag (){
+	double temp = sqrt((x)*(x) + (y)*(y));
+	return temp;
+};
 template class vector<int>;
 template class vector<double>;
 template class vector<float>;

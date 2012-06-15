@@ -17,13 +17,14 @@ class game: public gamePrototype{
 		game(int argc, char* argv[]);
 		void init();
 		void start();
+		int numBots;
+		jsbot **bots;
+		double scan(double ang, double width, void* bot);
+		void shoot(double ang, double distance, void* bot);
 	private:
 		static void loop();
 		static void changeSize(int, int);
 		static void idle();
-		int numBots;
-		jsbot **bots;
-		
 };
 
 #endif
