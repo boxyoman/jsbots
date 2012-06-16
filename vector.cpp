@@ -27,6 +27,14 @@ template <typename type> vector<type> vector<type>::operator * (vector<type> a){
 	return temp;
 };
 
+template <typename type> vector<double> vector<type>::unit (){
+	vector<double> temp(x,y);
+	double mag = temp.mag();
+	temp.x = x/mag;
+	temp.y = y/mag;
+	return temp;
+};
+
 template <typename type> vector<type> vector<type>::sign(){
 	vector<type> temp(x, y);
 	if(x>0){

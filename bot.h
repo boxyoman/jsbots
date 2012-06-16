@@ -18,7 +18,9 @@ using namespace std;
 
 class gamePrototype{
 	public:
-		virtual void shoot(double ang, double distance, void* bot){}
+		virtual int shoot(double ang, double distance, void* bot){
+			return 0;
+		}
 		virtual double scan(double ang, double width, void* bot){
 			return 0;
 		};
@@ -29,11 +31,11 @@ class jsbot{
 		vector<double> pos;
 		vector<double> vel;
 		vector<double> force;
+		double damage;
+		
 		jsbot();
 		jsbot(string);
 		~jsbot();
-		
-		Local<Script> script;
 		
 		gamePrototype *game;
 		
@@ -42,7 +44,8 @@ class jsbot{
 		string name;
 		string src;
 		
-		static Handle<Value> botScanCallbacl(const Arguments &args);
+		static Handle<Value> botScanCallback(const Arguments &args);
+		static Handle<Value> botShootcallback(const Arguments &args);
 		
 		void init(Handle<ObjectTemplate>);
 		

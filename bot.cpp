@@ -10,7 +10,7 @@ double abs(double a){
 	if(a<0){
 		return -1*a;
 	}
-	return 1;
+	return a;
 }
 
 jsbot::jsbot(){
@@ -68,7 +68,7 @@ void jsbot::init(Handle<ObjectTemplate> global){
 	}
 	Context::Scope contextScope(context);
 	
-	script = Script::Compile(source);
+	Local<Script> script = Script::Compile(source);
 	if(script.IsEmpty()){
 		printf("Error in compiling js source");
 	}
@@ -93,9 +93,29 @@ void jsbot::update(){
 	
 	selfBot = this;
 	
-	pos = pos + vel*gameGlobals::elapsedTime;
+	//Static and kenetic friction
+	vector<double> sFriction(20,20);
+	vector<double> kFriction(20,20);
+	if(vel.mag()<.01){
+		kFriction = kFriction*0;
+		
+		if(abs(force.x) < sFriction.x){
+			sFriction.x = -force.x;
+		}else if(force.x>0){
+			sFriction.x = sFriction.x *-1;
+		}
+		if(abs(force.y) < sFriction.y){
+			sFriction.y = -force.y;
+		}else if(force.y>0){
+			sFriction.y = sFriction.y *-1;
+		}
+	}else{
+		sFriction = sFriction*0;
+	}
 	
-	vel = vel + (vel*-.5 + force)*gameGlobals::elapsedTime;
+	//Calculate positions assuming constant forc
+	pos = pos + vel*gameGlobals::elapsedTime + (kFriction*vel.sign()*-1 + sFriction + force)*gameGlobals::elapsedTime*gameGlobals::elapsedTime*.5;
+	vel = vel + (kFriction*vel.sign()*-1 + sFriction + force)*gameGlobals::elapsedTime;
 	
 	Handle<Object> glob = context->Global();
 	if(glob->Has(String::New("main"))){
@@ -117,10 +137,11 @@ void jsbot::setupBotTemplate(Handle<ObjectTemplate> global){
 	//bot.scan(ang, width)
 	Handle<External> botPointer = External::New(this);
 	
-	bot->Set(String::New("scan"), FunctionTemplate::New(botScanCallbacl, botPointer));
+	bot->Set(String::New("scan"), FunctionTemplate::New(botScanCallback, botPointer));
+	bot->Set(String::New("shoot"), FunctionTemplate::New(botShootcallback, botPointer));
 };
 
-Handle<Value> jsbot::botScanCallbacl(const Arguments &args){
+Handle<Value> jsbot::botScanCallback(const Arguments &args){
 	HandleScope scope;
 	jsbot *botPointer = reinterpret_cast<jsbot*>(External::Unwrap(args.Data()));
 	if(args.Length() == 2){
@@ -133,6 +154,23 @@ Handle<Value> jsbot::botScanCallbacl(const Arguments &args){
 		}
 	}else{
 		return scope.Close(ThrowException(Exception::ReferenceError(v8::String::New("bot.scan needs two arguments"))));
+	}
+};
+
+Handle<Value> jsbot::botShootcallback(const Arguments &args){
+	HandleScope scope;
+	jsbot *botPointer = reinterpret_cast<jsbot*>(External::Unwrap(args.Data()));
+	if(args.Length() == 2){
+		if(args[0]->IsNumber() && args[1]->IsNumber()){
+			double ang = args[0]->ToNumber()->Value();
+			double dist = args[1]->ToNumber()->Value();
+			
+			double temp = botPointer->game->shoot(ang, dist, botPointer);
+			//1 if bullet shot, 0 if there was already a bullet, -1 unknown error
+			return Number::New(temp);
+		}
+	}else{
+		return scope.Close(ThrowException(Exception::ReferenceError(v8::String::New("bot.shoot needs two arguments"))));
 	}
 };
 

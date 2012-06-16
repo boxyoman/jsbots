@@ -17,6 +17,8 @@ template <typename type> class vector{
 		double distance(vector);
 		double mag();
 		
+		vector<double> unit();
+		
 		vector sign();
 		
 		vector operator + (vector);
