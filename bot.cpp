@@ -94,8 +94,8 @@ void jsbot::update(){
 	selfBot = this;
 	
 	//Static and kenetic friction
-	vector<double> sFriction(20,20);
-	vector<double> kFriction(20,20);
+	vector<double> sFriction(1,1);
+	vector<double> kFriction(1,1);
 	if(vel.mag()<.01){
 		kFriction = kFriction*0;
 		
@@ -111,6 +111,11 @@ void jsbot::update(){
 		}
 	}else{
 		sFriction = sFriction*0;
+	}
+	
+	if(vel.mag()>15){
+		vector<double> temp = vel.unit();
+		vel = temp*15;
 	}
 	
 	//Calculate positions assuming constant forc

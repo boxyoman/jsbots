@@ -51,7 +51,7 @@ template <typename type> vector<type> vector<type>::sign(){
 };
 
 template <typename type> double vector<type>::angle (vector<type> a){
-	double temp = atan2(a.x - x, a.y - y);
+	double temp = atan2(a.y - y, a.x - x);
 	return temp;
 };
 

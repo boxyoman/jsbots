@@ -15,11 +15,15 @@ game::game(int argc, char* argv[]){
 			bots[i]->init(global);
 			bots[i]->game = this;
 		}
-		bots[0]->pos.x = 750;
-		bots[0]->pos.y = 350;
+		bots[0]->pos.x = 90;
+		bots[0]->pos.y = 90;
+		
+		bots[1]->pos.x = 10;
+		bots[1]->pos.y = 10;
 		
 		for(int i = 0; i<4; i++){
 			bullets[i].ison = 0;
+			bullets[i].explodeTime = 0;
 		}
 		
 		glutInit(&argc, argv);
@@ -30,7 +34,7 @@ game::game(int argc, char* argv[]){
 };
 void game::init(){
 	glutInitWindowPosition(-1, -1);
-    glutInitWindowSize(800, 600);
+    glutInitWindowSize(500, 500);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     
     glutCreateWindow("JS Bots");
@@ -45,6 +49,19 @@ void game::init(){
 void game::start(){
 	glutMainLoop();
 };
+void game::changeSize(int width, int height){
+	glViewport(0, 0, width, height);
+	
+	glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, 100, 0, 100);
+    glMatrixMode(GL_MODELVIEW);
+};
+
+void game::idle(){
+	glutPostRedisplay();
+}
+
 void game::loop(){
 	//Get the times
 	double cTime = (double)glutGet(GLUT_ELAPSED_TIME)/1000;
@@ -63,36 +80,46 @@ void game::loop(){
 		glTranslatef(self->bots[i]->pos.x, self->bots[i]->pos.y, 0.0);
 		
 		glBegin(GL_POLYGON);
-			glVertex3f(-10.0,-10.0,0.0);
-			glVertex3f(-10.0,10,0.0);
-			glVertex3f(10,10.0,0.0);
-			glVertex3f(10.0,-10,0.0);
+			glVertex3f(-0.5, -0.5, 0.0);
+			glVertex3f(-0.5, 0.5, 0.0);
+			glVertex3f(0.5, 0.5, 0.0);
+			glVertex3f(0.5, -0.5, 0.0);
 		glEnd();
 		glPopMatrix();
 	}
 	for(int i=0;i<4;i++){
-		if(self->bullets[i].ison == 1){
-			
+		if(self->bullets[i].ison == 1 && self->bullets[i].explodeTime >= gameGlobals::currentTime){
+			//Make it look like the bullets traveling
 			vector<double> temp = (self->bullets[i].dest - self->bullets[i].pos).unit();
-			temp = temp * 500 *gameGlobals::elapsedTime;
+			temp = temp * 50 *gameGlobals::elapsedTime;
 			self->bullets[i].pos = self->bullets[i].pos + temp;
 			
 			
-			double dist = (self->bullets[i].dest - self->bullets[i].pos).mag();
-			if(self->bullets[i].explodeTime <= gameGlobals::currentTime){
-				self->bullets[i].ison = 0;
-			}
+			
 			
 			glPushMatrix();
 			glTranslatef(self->bullets[i].pos.x, self->bullets[i].pos.y, 0.0);
 
 			glBegin(GL_POLYGON);
-				glVertex3f(-3.0, -3.0, 0.0);
-				glVertex3f(-3.0, 3.0, 0.0);
-				glVertex3f(3.0, 3.0, 0.0);
-				glVertex3f(3.0, -3.0, 0.0);
+				glVertex3f(-0.2, -0.2, 0.0);
+				glVertex3f(-0.2, 0.2, 0.0);
+				glVertex3f(0.2, 0.2, 0.0);
+				glVertex3f(0.2, -0.2, 0.0);
 			glEnd();
 			glPopMatrix();
+		}else if(self->bullets[i].explodeTime+.5 >= gameGlobals::currentTime && self->bullets[i].ison == 1){
+			glPushMatrix();
+			glTranslatef(self->bullets[i].dest.x, self->bullets[i].dest.y, 0.0);
+
+			glBegin(GL_POLYGON);
+				glVertex3f(-2.0, -2.0, 0.0);
+				glVertex3f(-2.0, 2.0, 0.0);
+				glVertex3f(2.0, 2.0, 0.0);
+				glVertex3f(2.0, -2.0, 0.0);
+			glEnd();
+			glPopMatrix();
+		}else if(self->bullets[i].explodeTime+.5 <= gameGlobals::currentTime){
+			self->bullets[i].ison = 0;
 		}
 	}
 	glutSwapBuffers();
@@ -103,14 +130,20 @@ int game::shoot(double ang, double dist, void* bot){
 	for(int i = 0; i<self->numBots; i++){
 		if(self->bots[i] == shotBot){
 			if(self->bullets[i].ison == 0){
+				
+				if(dist > 80){
+					dist = 80;
+				}
+				
 				self->bullets[i].ison = 1;
 				self->bullets[i].pos = self->bots[i]->pos;
+				//For what ever reason sin and cos are backwards
 				self->bullets[i].dest.x = cos(ang)*dist + self->bots[i]->pos.x;
 				self->bullets[i].dest.y = sin(ang)*dist + self->bots[i]->pos.y;
 				
 				double dist = (self->bullets[i].pos - self->bullets[i].dest).mag();
 				
-				self->bullets[i].explodeTime = dist/500+gameGlobals::currentTime;
+				self->bullets[i].explodeTime = dist/50+gameGlobals::currentTime;
 				
 				return 1;
 			}else{
@@ -160,16 +193,3 @@ double game::scan(double ang, double width, void* bot){
 		}
 	}
 };
-
-void game::changeSize(int width, int height){
-	glViewport(0, 0, width, height);
-	
-	glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, width, 0, height);
-    glMatrixMode(GL_MODELVIEW);
-};
-
-void game::idle(){
-	glutPostRedisplay();
-}
