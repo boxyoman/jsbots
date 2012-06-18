@@ -17,11 +17,13 @@ jsbot::jsbot(){
 	pos = vector<double>(50,50);
 	vel = vector<double>(0,0);
 	force = vector<double>(0,0);
+	health = 100;
 }
 jsbot::jsbot(string srca){
 	pos = vector<double>(50,50);
 	vel = vector<double>(0,0);
 	force = vector<double>(0,0);
+	health = 100;
 	src = srca;
 }
 
@@ -96,6 +98,8 @@ void jsbot::update(){
 	//Static and kenetic friction
 	vector<double> sFriction(1,1);
 	vector<double> kFriction(1,1);
+	
+	
 	if(vel.mag()<.01){
 		kFriction = kFriction*0;
 		
@@ -112,11 +116,40 @@ void jsbot::update(){
 	}else{
 		sFriction = sFriction*0;
 	}
-	
+	//Max force = 5
+	if(force.x > 5){
+		force.x = 5;
+	}
+	if(force.y > 5){
+		force.y = 5;
+	}
+	//Max speed = 15
 	if(vel.mag()>15){
 		vector<double> temp = vel.unit();
 		vel = temp*15;
 	}
+	
+	if(pos.x <= 0){
+		health -= vel.mag()*.3;
+		vel = vel* -1;
+		pos.x = 0;
+	}
+	if(pos.x >= 100){
+		health -= vel.mag()*.3;
+		vel = vel* -1;
+		pos.x = 100;
+	}
+	if(pos.y <= 0){
+		health -= vel.mag()*.3;
+		vel = vel* -1;
+		pos.y = 0;
+	}
+	if(pos.y >= 100){
+		health -= vel.mag()*.3;
+		vel = vel* -1;
+		pos.y = 100;
+	}
+	
 	
 	//Calculate positions assuming constant forc
 	pos = pos + vel*gameGlobals::elapsedTime + (kFriction*vel.sign()*-1 + sFriction + force)*gameGlobals::elapsedTime*gameGlobals::elapsedTime*.5;
@@ -139,11 +172,20 @@ void jsbot::setupBotTemplate(Handle<ObjectTemplate> global){
 	bot->Set(String::New("pos"), makeVectorObjectTemplate(&selfBot->pos, ReadOnly), ReadOnly);
 	bot->Set(String::New("vel"), makeVectorObjectTemplate(&selfBot->vel, ReadOnly), ReadOnly);
 	bot->Set(String::New("force"), makeVectorObjectTemplate(&selfBot->force, None), None);
-	//bot.scan(ang, width)
+	
 	Handle<External> botPointer = External::New(this);
 	
+	bot->SetAccessor(String::New("health"), getHealth, 0, botPointer);
+	//bot.scan(ang, width)
 	bot->Set(String::New("scan"), FunctionTemplate::New(botScanCallback, botPointer));
+	//bot.shoot(ang, dist) max dist = 80
 	bot->Set(String::New("shoot"), FunctionTemplate::New(botShootcallback, botPointer));
+};
+
+Handle<Value> jsbot::getHealth(Local<String> property, const AccessorInfo &info){
+	HandleScope scope;
+	jsbot *botPointer = reinterpret_cast<jsbot*>(External::Unwrap(info.Data()));
+	return scope.Close(Number::New(botPointer->health));
 };
 
 Handle<Value> jsbot::botScanCallback(const Arguments &args){

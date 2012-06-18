@@ -16,6 +16,7 @@ typedef struct{
 	vector<double> pos;
 	vector<double> dest;
 	double explodeTime;
+	int deathCheck;
 	int ison;
 }bullet;
 

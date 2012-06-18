@@ -31,7 +31,7 @@ class jsbot{
 		vector<double> pos;
 		vector<double> vel;
 		vector<double> force;
-		double damage;
+		double health;
 		
 		jsbot();
 		jsbot(string);
@@ -46,7 +46,7 @@ class jsbot{
 		
 		static Handle<Value> botScanCallback(const Arguments &args);
 		static Handle<Value> botShootcallback(const Arguments &args);
-		
+		static Handle<Value> getHealth(Local<String> property, const AccessorInfo &info);
 		void init(Handle<ObjectTemplate>);
 		
 	private:

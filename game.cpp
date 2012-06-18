@@ -24,6 +24,7 @@ game::game(int argc, char* argv[]){
 		for(int i = 0; i<4; i++){
 			bullets[i].ison = 0;
 			bullets[i].explodeTime = 0;
+			bullets[i].deathCheck = 0;
 		}
 		
 		glutInit(&argc, argv);
@@ -67,61 +68,118 @@ void game::loop(){
 	double cTime = (double)glutGet(GLUT_ELAPSED_TIME)/1000;
 	gameGlobals::elapsedTime = cTime - gameGlobals::currentTime;
 	gameGlobals::currentTime = cTime;
-	//Update the bots
-	for(int i=0;i<self->numBots;i++){
-		self->bots[i]->update();
-	}
 	
 	glClearColor(.5, 0.5,0.5,1);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	for(int i=0;i<self->numBots;i++){
-		glPushMatrix();
-		glTranslatef(self->bots[i]->pos.x, self->bots[i]->pos.y, 0.0);
-		
-		glBegin(GL_POLYGON);
-			glVertex3f(-0.5, -0.5, 0.0);
-			glVertex3f(-0.5, 0.5, 0.0);
-			glVertex3f(0.5, 0.5, 0.0);
-			glVertex3f(0.5, -0.5, 0.0);
-		glEnd();
-		glPopMatrix();
-	}
-	for(int i=0;i<4;i++){
-		if(self->bullets[i].ison == 1 && self->bullets[i].explodeTime >= gameGlobals::currentTime){
-			//Make it look like the bullets traveling
-			vector<double> temp = (self->bullets[i].dest - self->bullets[i].pos).unit();
-			temp = temp * 50 *gameGlobals::elapsedTime;
-			self->bullets[i].pos = self->bullets[i].pos + temp;
-			
-			
-			
-			
-			glPushMatrix();
-			glTranslatef(self->bullets[i].pos.x, self->bullets[i].pos.y, 0.0);
+	//Draw and update bots
+	static int botsLeft = self->numBots;
+	if(botsLeft > 1){
+		botsLeft = 0;
+		for(int i=0;i<self->numBots;i++){
+			if(self->bots[i]->health > 0){
 
-			glBegin(GL_POLYGON);
-				glVertex3f(-0.2, -0.2, 0.0);
-				glVertex3f(-0.2, 0.2, 0.0);
-				glVertex3f(0.2, 0.2, 0.0);
-				glVertex3f(0.2, -0.2, 0.0);
-			glEnd();
-			glPopMatrix();
-		}else if(self->bullets[i].explodeTime+.5 >= gameGlobals::currentTime && self->bullets[i].ison == 1){
-			glPushMatrix();
-			glTranslatef(self->bullets[i].dest.x, self->bullets[i].dest.y, 0.0);
+				botsLeft++;
+				//Update
+				self->bots[i]->update();
 
-			glBegin(GL_POLYGON);
-				glVertex3f(-2.0, -2.0, 0.0);
-				glVertex3f(-2.0, 2.0, 0.0);
-				glVertex3f(2.0, 2.0, 0.0);
-				glVertex3f(2.0, -2.0, 0.0);
-			glEnd();
-			glPopMatrix();
-		}else if(self->bullets[i].explodeTime+.5 <= gameGlobals::currentTime){
-			self->bullets[i].ison = 0;
+				//Draw
+				glPushMatrix();
+				glTranslatef(self->bots[i]->pos.x, self->bots[i]->pos.y, 0.0);
+
+				glBegin(GL_POLYGON);
+					glVertex3f(-0.5, -0.5, 0.0);
+					glVertex3f(-0.5, 0.5, 0.0);
+					glVertex3f(0.5, 0.5, 0.0);
+					glVertex3f(0.5, -0.5, 0.0);
+				glEnd();
+				glPopMatrix();
+			}
 		}
+		for(int i=0;i<4;i++){
+			if(self->bullets[i].ison == 1 && self->bullets[i].explodeTime >= gameGlobals::currentTime){
+
+				//Make it look like the bullets traveling
+				vector<double> temp = (self->bullets[i].dest - self->bullets[i].pos).unit();
+				temp = temp * 50 *gameGlobals::elapsedTime;
+				self->bullets[i].pos = self->bullets[i].pos + temp;
+
+				self->bullets[i].deathCheck = 0;
+				//Check to see if it has collided with the wall
+				if(self->bullets[i].pos.x <= 0){
+					self->bullets[i].pos.x = 0;
+					self->bullets[i].dest = self->bullets[i].pos;
+					self->bullets[i].explodeTime = gameGlobals::currentTime;
+				}
+				if(self->bullets[i].pos.x >= 100){
+					self->bullets[i].pos.x = 100;
+					self->bullets[i].explodeTime = gameGlobals::currentTime;
+					self->bullets[i].dest = self->bullets[i].pos;
+				}
+				if(self->bullets[i].pos.y <= 0){
+					self->bullets[i].pos.y = 0;
+					self->bullets[i].explodeTime = gameGlobals::currentTime;
+					self->bullets[i].dest = self->bullets[i].pos;
+				}
+				if(self->bullets[i].pos.y >= 100){
+					self->bullets[i].pos.y = 100;
+					self->bullets[i].explodeTime = gameGlobals::currentTime;
+					self->bullets[i].dest = self->bullets[i].pos;
+				}
+
+				glPushMatrix();
+				glTranslatef(self->bullets[i].pos.x, self->bullets[i].pos.y, 0.0);
+
+				glBegin(GL_POLYGON);
+					glVertex3f(-0.2, -0.2, 0.0);
+					glVertex3f(-0.2, 0.2, 0.0);
+					glVertex3f(0.2, 0.2, 0.0);
+					glVertex3f(0.2, -0.2, 0.0);
+				glEnd();
+				glPopMatrix();
+			}else if(self->bullets[i].explodeTime+.5 >= gameGlobals::currentTime && self->bullets[i].ison == 1){
+
+				//Check to see if anyone got hit
+				if(self->bullets[i].deathCheck == 0){
+					for(int j = 0; j<self->numBots; j++){
+						double dist = self->bullets[i].dest.distance(self->bots[j]->pos);
+						if(dist <= .5){
+							self->bots[j]->health -= 20;
+						}else if(dist <= 1){
+							self->bots[j]->health -= 10;
+						}else if(dist <= 2){
+							self->bots[j]->health -= 5;
+						}
+						printf("%s: %f\n", self->bots[j]->name.c_str(), self->bots[j]->health);
+					}
+					printf("\n");
+					self->bullets[i].deathCheck = 1;
+				}
+
+				//Blowing up
+				glPushMatrix();
+				glTranslatef(self->bullets[i].dest.x, self->bullets[i].dest.y, 0.0);
+
+				glBegin(GL_POLYGON);
+					glVertex3f(-2.0, -2.0, 0.0);
+					glVertex3f(-2.0, 2.0, 0.0);
+					glVertex3f(2.0, 2.0, 0.0);
+					glVertex3f(2.0, -2.0, 0.0);
+				glEnd();
+				glPopMatrix();
+			}else if(self->bullets[i].explodeTime+.5 <= gameGlobals::currentTime){
+				self->bullets[i].ison = 0;
+			}
+		}
+	}else{
+		for(int i=0;i<self->numBots;i++){
+			if(self->bots[i]->health > 0){
+				printf("\n%s wins!! \n\n", self->bots[i]->name.c_str());
+				exit(1);
+			}
+		}
+			
 	}
+	
 	glutSwapBuffers();
 };
 //Called when a bot wants to shoot
