@@ -25,22 +25,6 @@ namespace gameGlobals{
 	static Handle<Value> geteTime(Local<String> property, const AccessorInfo& info);
 	static Handle<Value> getcTime(Local<String> property, const AccessorInfo& info);
 };
-/*
-class gameGlobals{
-	public:
-		gameGlobals();
-		Handle<ObjectTemplate> getTemplate();
-		
-		double elapsedTime;
-		double currentTime;
-	private:
-		Handle<ObjectTemplate> global;
-		Handle<ObjectTemplate> gameTime;
 
-		
-		static Handle<Value> log(const Arguments &args);
-		static Handle<Value> geteTime(Local<String> property, const AccessorInfo& info);
-		static Handle<Value> getcTime(Local<String> property, const AccessorInfo& info);
-};*/
 
 #endif

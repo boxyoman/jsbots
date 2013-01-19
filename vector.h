@@ -27,6 +27,6 @@ template <typename type> class vector{
 		vector operator * (vector);
 		
 		type dot(vector);
-};    
-            
+};
+
 #endif

@@ -1,4 +1,4 @@
-v8 = -I/Users/Jonny/Dropbox/Developer/v8/include /Users/Jonny/Dropbox/Developer/v8/out/native/libv8.dylib -lpthread
+v8 = -I/Users/Jonny/Dropbox/Developer/v8/include /Users/Jonny/Dropbox/Developer/v8/out/native/libv8_base.a -lpthread
 
 jsbots: vector.o bot.o game.o vectorTemplate.o gameTemplate.o
 	g++ main.cpp $(v8) bot.o vector.o game.o gameTemplate.o vectorTemplate.o -o jsbots -framework OpenGL -framework GLUT

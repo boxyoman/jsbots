@@ -56,5 +56,5 @@ class jsbot{
 		void setupBotTemplate(Handle<ObjectTemplate>);
 		
 };
-
+ 
 #endif

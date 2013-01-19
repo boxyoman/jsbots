@@ -85,11 +85,13 @@ Handle<Value> vectorTemplate::getVectorX(Local<String> property, const AccessorI
 	return scope.Close(Number::New(vect->x));	
 }
 void vectorTemplate::setVectorX(Local<String> property, Local<Value> value, const AccessorInfo &info){
+	HandleScope scope;
 	Local<External> data = Local<External>::Cast(info.Data());
 	vector<double> *vect = reinterpret_cast<vector<double> *>(data->Value());
 	if(value->IsNumber()){
 		vect->x = value->ToNumber()->Value();
 	}
+	scope.Close();
 }
 Handle<Value> vectorTemplate::getVectorY(Local<String> property, const AccessorInfo &info){
 	HandleScope scope;
@@ -98,11 +100,13 @@ Handle<Value> vectorTemplate::getVectorY(Local<String> property, const AccessorI
 	return scope.Close(Number::New(vect->y));	
 }
 void vectorTemplate::setVectorY(Local<String> property, Local<Value> value, const AccessorInfo &info){
+	HandleScope scope;
 	Local<External> data = Local<External>::Cast(info.Data());
 	vector<double> *vect = reinterpret_cast<vector<double> *>(data->Value());
 	if(value->IsNumber()){
 		vect->y = value->ToNumber()->Value();
 	}
+	scope.Close();
 }
 
 //Add vectors
