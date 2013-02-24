@@ -89,6 +89,7 @@ void game::idle(){
 }
 
 void game::draw(){
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for(int i=0;i<self->numBots;i++){
 		if(self->bots[i]->health > 0){
 			glPushMatrix();
@@ -108,6 +109,43 @@ void game::draw(){
 		}
 	}
 	
+	for(int i = 0; i < 4; i++){
+		if(self->bullets[i].ison == 1 && self->bullets[i].explodeTime >= gameGlobals::currentTime){
+			glPushMatrix();
+			glTranslatef(self->bullets[i].pos.x, self->bullets[i].pos.y, 0.0);
+			glBindTexture( GL_TEXTURE_2D, self->tex[gl_bullet]);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0, 0.0);
+			glVertex3f(-1.0, -1.0, 0.0);
+			glTexCoord2f(0.0, 1.0);
+			glVertex3f(-1.0, 1.0, 0.0);
+			glTexCoord2f(1.0, 1.0);
+			glVertex3f(1.0, 1.0, 0.0);
+			glTexCoord2f(1.0, 0.0);
+			glVertex3f(1.0, -1.0, 0.0);
+			glEnd();				
+			glPopMatrix();
+		}else if(self->bullets[i].explodeTime + 0.5 >= gameGlobals::currentTime && self->bullets[i].ison == 1){
+			
+			//Blowing up
+			glPushMatrix();
+			glTranslatef(self->bullets[i].dest.x, self->bullets[i].dest.y, 0.0);
+			glScalef(2,2,0);
+			glBindTexture( GL_TEXTURE_2D, self->tex[gl_explode]);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0, 0.0);
+			glVertex3f(-1.0, -1.0, 0.0);
+			glTexCoord2f(0.0, 1.0);
+			glVertex3f(-1.0, 1.0, 0.0);
+			glTexCoord2f(1.0, 1.0);
+			glVertex3f(1.0, 1.0, 0.0);
+			glTexCoord2f(1.0, 0.0);
+			glVertex3f(1.0, -1.0, 0.0);
+			glEnd();				
+			glPopMatrix();
+		}
+	}
+	glutSwapBuffers();
 }
 
 void game::update(){
@@ -115,44 +153,14 @@ void game::update(){
 	gameGlobals::elapsedTime = cTime - gameGlobals::currentTime;
 	gameGlobals::currentTime = cTime;
 	
-	
-}
-
-void game::loop(){
-	//Get the times
-	double cTime = (double)glutGet(GLUT_ELAPSED_TIME)/1000;
-	gameGlobals::elapsedTime = cTime - gameGlobals::currentTime;
-	gameGlobals::currentTime = cTime;
-	
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//Draw and update bots
 	static int botsLeft = self->numBots;
 	if(botsLeft > 1){
 		botsLeft = 0;
 		for(int i=0;i<self->numBots;i++){
 			if(self->bots[i]->health > 0){
-
 				botsLeft++;
-				
-				//Update
 				self->bots[i]->update();
-
-				//Draw
-				glPushMatrix();
-				glBindTexture( GL_TEXTURE_2D, self->tex[gl_ship]);
-				glTranslatef(self->bots[i]->pos.x, self->bots[i]->pos.y, 0.0);
-				glBegin(GL_QUADS);
-				glTexCoord2f(0.0, 0.0);
-				glVertex3f(-1.0, -1.0, 0.0);
-				glTexCoord2f(0.0, 1.0);
-				glVertex3f(-1.0, 1.0, 0.0);
-				glTexCoord2f(1.0, 1.0);
-				glVertex3f(1.0, 1.0, 0.0);
-				glTexCoord2f(1.0, 0.0);
-				glVertex3f(1.0, -1.0, 0.0);
-				glEnd();				
-				glPopMatrix();
 			}
 		}
 		for(int i=0;i<4;i++){
@@ -186,21 +194,6 @@ void game::loop(){
 					self->bullets[i].explodeTime = gameGlobals::currentTime;
 					self->bullets[i].dest = self->bullets[i].pos;
 				}
-
-				glPushMatrix();
-				glTranslatef(self->bullets[i].pos.x, self->bullets[i].pos.y, 0.0);
-				glBindTexture( GL_TEXTURE_2D, self->tex[gl_bullet]);
-				glBegin(GL_QUADS);
-				glTexCoord2f(0.0, 0.0);
-				glVertex3f(-1.0, -1.0, 0.0);
-				glTexCoord2f(0.0, 1.0);
-				glVertex3f(-1.0, 1.0, 0.0);
-				glTexCoord2f(1.0, 1.0);
-				glVertex3f(1.0, 1.0, 0.0);
-				glTexCoord2f(1.0, 0.0);
-				glVertex3f(1.0, -1.0, 0.0);
-				glEnd();				
-				glPopMatrix();
 			}else if(self->bullets[i].explodeTime + 0.5 >= gameGlobals::currentTime && self->bullets[i].ison == 1){
 
 				//Check to see if anyone got hit
@@ -219,24 +212,6 @@ void game::loop(){
 					printf("\n");
 					self->bullets[i].deathCheck = 1;
 				}
-
-				//Blowing up
-				glPushMatrix();
-				glTranslatef(self->bullets[i].dest.x, self->bullets[i].dest.y, 0.0);
-				glScalef(2,2,0);
-				glBindTexture( GL_TEXTURE_2D, self->tex[gl_explode]);
-				glBegin(GL_QUADS);
-				glTexCoord2f(0.0, 0.0);
-				glVertex3f(-1.0, -1.0, 0.0);
-				glTexCoord2f(0.0, 1.0);
-				glVertex3f(-1.0, 1.0, 0.0);
-				glTexCoord2f(1.0, 1.0);
-				glVertex3f(1.0, 1.0, 0.0);
-				glTexCoord2f(1.0, 0.0);
-				glVertex3f(1.0, -1.0, 0.0);
-				glEnd();				
-				glPopMatrix();
-				
 			}else if(self->bullets[i].explodeTime+.5 <= gameGlobals::currentTime){
 				self->bullets[i].ison = 0;
 			}
@@ -247,11 +222,13 @@ void game::loop(){
 				printf("\n%s wins!! \n\n", self->bots[i]->name.c_str());
 				//exit(1);
 			}
-		}
-			
-	}
-	
-	glutSwapBuffers();
+		}		
+  }	
+}
+
+void game::loop(){
+	update();
+	draw();
 };
 
 
