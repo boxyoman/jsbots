@@ -1,5 +1,7 @@
 var center = new Vector(50, 50);
+
 var ang2 = 0;
+
 function sign(a){
 	if(a<0){
 		return -1;
@@ -31,8 +33,9 @@ function main(){
 	}
 	
 	var scan = bot.scan(ang2, Math.PI/18);
-	if(scan !== 0){
+	if(scan != 0){
 		bot.shoot(ang2, scan);
 	}
+
 	ang2 += Math.PI/18;
 }

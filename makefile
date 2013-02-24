@@ -1,22 +1,27 @@
-v8 = -I/Users/Jonny/Dropbox/Developer/v8/include /Users/Jonny/Dropbox/Developer/v8/out/native/libv8.dylib -lpthread
+iv8 = -I../v8libs/include 
 
-jsbots: vector.o bot.o game.o vectorTemplate.o gameTemplate.o
-	g++ main.cpp $(v8) bot.o vector.o game.o gameTemplate.o vectorTemplate.o -o jsbots -framework OpenGL -framework GLUT
+av8 = ../v8libs/libv8.dylib -lpthread
+
+jsbots: vector.o bot.o game.o vectorTemplate.o gameTemplate.o load_png.o
+	g++ -m32 main.cpp $(iv8) $(av8) bot.o vector.o game.o load_png.o gameTemplate.o vectorTemplate.o -o jsbots -framework OpenGL -framework GLUT -lpng
 
 vector.o: 
-	g++ -c vector.cpp;
+	g++ -m32 -c vector.cpp;
 
 vectorTemplate.o: vector.h
-	g++ -c vectorTemplate.cpp $(v8)
+	g++ -m32 -c vectorTemplate.cpp $(iv8)
 
 gameTemplate.o: vector.h vectorTemplate.h
-	g++ -c gameTemplate.cpp $(v8)
+	g++ -m32 -c gameTemplate.cpp $(iv8)
 
 bot.o: vector.h vectorTemplate.h
-	g++ -c bot.cpp $(v8) 
+	g++ -m32 -c bot.cpp $(iv8) 
 
-game.o: vector.h bot.h gameTemplate.h vectorTemplate.h
-	g++ -c game.cpp $(v8) -framework OpenGL -framework GLUT
+game.o: vector.h bot.h gameTemplate.h vectorTemplate.h game.cpp game.h load_png.h
+	g++ -m32 -c game.cpp $(iv8)
+
+load_png.o: load_png.h load_png.cpp
+	g++ -arch i386 -c load_png.cpp
 
 clean:
 	rm vector.o jsbots bot.o game.o gameTemplate.o vectorTemplate.o

@@ -15,7 +15,7 @@ function main(){
 	}
 	
 	var scan = bot.scan(ang, Math.PI/18);
-	if(scan !== 0){
+	if(scan != 0){
 		bot.shoot(ang, scan);
 	}
 	ang += Math.PI/18;

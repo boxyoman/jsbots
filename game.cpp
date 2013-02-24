@@ -1,13 +1,21 @@
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
+#include <OpenGL/glext.h>
+#include "bot.h"
+#include "gameTemplate.h"
 #include "game.h"
+
+#include "load_png.h"
 
 game* self;
 HandleScope scope;
+
 game::game(int argc, char* argv[]){
-	
 	gameGlobals::setUpGolbals();
 	Handle<ObjectTemplate> global = gameGlobals::global;
 	
-	if(argc > 2){
+	if(argc > 2 && argc < 6){
 		numBots = argc-1;
 		bots = (jsbot**) malloc(sizeof(jsbot)*numBots);
 		for(int i=0;i<numBots; i++){
@@ -25,31 +33,48 @@ game::game(int argc, char* argv[]){
 			bullets[i].ison = 0;
 			bullets[i].explodeTime = 0;
 			bullets[i].deathCheck = 0;
-		}
-		
-		glutInit(&argc, argv);
+		}			
+	glutInit(&argc, argv);	
 	}else{
-		printf("Need at least 2 bots");
+		printf("Need at least 2 bots and no more than 4.\n");
 		exit(1);
 	}
 };
+
 void game::init(){
+	
 	glutInitWindowPosition(-1, -1);
-    glutInitWindowSize(500, 500);
+  glutInitWindowSize(500, 500);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+	
     
-    glutCreateWindow("JS Bots");
+  glutCreateWindow("JS Bots");
 	
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glClearColor (0.6f, 0.6f, 0.6f, 1.0f);
+	glEnable(GL_TEXTURE_2D);
+	glShadeModel(GL_FLAT);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	
 	self = this;
 	glutDisplayFunc(game::loop);
 	glutReshapeFunc(game::changeSize);
 	glutIdleFunc(game::idle);
 	
+	load_texture("./imgs/Bullet.png", &tex[gl_bullet]);
+	load_texture("./imgs/Ship.png", &tex[gl_ship]);
+	load_texture("./imgs/explode.png", &tex[gl_explode]);
+	load_texture("./imgs/Scanner.png", &tex[gl_scanner]);
+	
+	
 };
+
 void game::start(){
 	glutMainLoop();
 };
+
 void game::changeSize(int width, int height){
 	glViewport(0, 0, width, height);
 	
@@ -63,13 +88,43 @@ void game::idle(){
 	glutPostRedisplay();
 }
 
+void game::draw(){
+	for(int i=0;i<self->numBots;i++){
+		if(self->bots[i]->health > 0){
+			glPushMatrix();
+			glBindTexture( GL_TEXTURE_2D, self->tex[gl_ship]);
+			glTranslatef(self->bots[i]->pos.x, self->bots[i]->pos.y, 0.0);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0.0, 0.0);
+			glVertex3f(-1.0, -1.0, 0.0);
+			glTexCoord2f(0.0, 1.0);
+			glVertex3f(-1.0, 1.0, 0.0);
+			glTexCoord2f(1.0, 1.0);
+			glVertex3f(1.0, 1.0, 0.0);
+			glTexCoord2f(1.0, 0.0);
+			glVertex3f(1.0, -1.0, 0.0);
+			glEnd();				
+			glPopMatrix();
+		}
+	}
+	
+}
+
+void game::update(){
+	double cTime = (double)glutGet(GLUT_ELAPSED_TIME)/1000;
+	gameGlobals::elapsedTime = cTime - gameGlobals::currentTime;
+	gameGlobals::currentTime = cTime;
+	
+	
+}
+
 void game::loop(){
 	//Get the times
 	double cTime = (double)glutGet(GLUT_ELAPSED_TIME)/1000;
 	gameGlobals::elapsedTime = cTime - gameGlobals::currentTime;
 	gameGlobals::currentTime = cTime;
 	
-	glClearColor(.5, 0.5,0.5,1);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//Draw and update bots
 	static int botsLeft = self->numBots;
@@ -79,19 +134,24 @@ void game::loop(){
 			if(self->bots[i]->health > 0){
 
 				botsLeft++;
+				
 				//Update
 				self->bots[i]->update();
 
 				//Draw
 				glPushMatrix();
+				glBindTexture( GL_TEXTURE_2D, self->tex[gl_ship]);
 				glTranslatef(self->bots[i]->pos.x, self->bots[i]->pos.y, 0.0);
-
-				glBegin(GL_POLYGON);
-					glVertex3f(-0.5, -0.5, 0.0);
-					glVertex3f(-0.5, 0.5, 0.0);
-					glVertex3f(0.5, 0.5, 0.0);
-					glVertex3f(0.5, -0.5, 0.0);
-				glEnd();
+				glBegin(GL_QUADS);
+				glTexCoord2f(0.0, 0.0);
+				glVertex3f(-1.0, -1.0, 0.0);
+				glTexCoord2f(0.0, 1.0);
+				glVertex3f(-1.0, 1.0, 0.0);
+				glTexCoord2f(1.0, 1.0);
+				glVertex3f(1.0, 1.0, 0.0);
+				glTexCoord2f(1.0, 0.0);
+				glVertex3f(1.0, -1.0, 0.0);
+				glEnd();				
 				glPopMatrix();
 			}
 		}
@@ -104,6 +164,7 @@ void game::loop(){
 				self->bullets[i].pos = self->bullets[i].pos + temp;
 
 				self->bullets[i].deathCheck = 0;
+				
 				//Check to see if it has collided with the wall
 				if(self->bullets[i].pos.x <= 0){
 					self->bullets[i].pos.x = 0;
@@ -128,15 +189,19 @@ void game::loop(){
 
 				glPushMatrix();
 				glTranslatef(self->bullets[i].pos.x, self->bullets[i].pos.y, 0.0);
-
-				glBegin(GL_POLYGON);
-					glVertex3f(-0.2, -0.2, 0.0);
-					glVertex3f(-0.2, 0.2, 0.0);
-					glVertex3f(0.2, 0.2, 0.0);
-					glVertex3f(0.2, -0.2, 0.0);
-				glEnd();
+				glBindTexture( GL_TEXTURE_2D, self->tex[gl_bullet]);
+				glBegin(GL_QUADS);
+				glTexCoord2f(0.0, 0.0);
+				glVertex3f(-1.0, -1.0, 0.0);
+				glTexCoord2f(0.0, 1.0);
+				glVertex3f(-1.0, 1.0, 0.0);
+				glTexCoord2f(1.0, 1.0);
+				glVertex3f(1.0, 1.0, 0.0);
+				glTexCoord2f(1.0, 0.0);
+				glVertex3f(1.0, -1.0, 0.0);
+				glEnd();				
 				glPopMatrix();
-			}else if(self->bullets[i].explodeTime+.5 >= gameGlobals::currentTime && self->bullets[i].ison == 1){
+			}else if(self->bullets[i].explodeTime + 0.5 >= gameGlobals::currentTime && self->bullets[i].ison == 1){
 
 				//Check to see if anyone got hit
 				if(self->bullets[i].deathCheck == 0){
@@ -158,14 +223,20 @@ void game::loop(){
 				//Blowing up
 				glPushMatrix();
 				glTranslatef(self->bullets[i].dest.x, self->bullets[i].dest.y, 0.0);
-
-				glBegin(GL_POLYGON);
-					glVertex3f(-2.0, -2.0, 0.0);
-					glVertex3f(-2.0, 2.0, 0.0);
-					glVertex3f(2.0, 2.0, 0.0);
-					glVertex3f(2.0, -2.0, 0.0);
-				glEnd();
+				glScalef(2,2,0);
+				glBindTexture( GL_TEXTURE_2D, self->tex[gl_explode]);
+				glBegin(GL_QUADS);
+				glTexCoord2f(0.0, 0.0);
+				glVertex3f(-1.0, -1.0, 0.0);
+				glTexCoord2f(0.0, 1.0);
+				glVertex3f(-1.0, 1.0, 0.0);
+				glTexCoord2f(1.0, 1.0);
+				glVertex3f(1.0, 1.0, 0.0);
+				glTexCoord2f(1.0, 0.0);
+				glVertex3f(1.0, -1.0, 0.0);
+				glEnd();				
 				glPopMatrix();
+				
 			}else if(self->bullets[i].explodeTime+.5 <= gameGlobals::currentTime){
 				self->bullets[i].ison = 0;
 			}
@@ -174,7 +245,7 @@ void game::loop(){
 		for(int i=0;i<self->numBots;i++){
 			if(self->bots[i]->health > 0){
 				printf("\n%s wins!! \n\n", self->bots[i]->name.c_str());
-				exit(1);
+				//exit(1);
 			}
 		}
 			
@@ -182,6 +253,8 @@ void game::loop(){
 	
 	glutSwapBuffers();
 };
+
+
 //Called when a bot wants to shoot
 int game::shoot(double ang, double dist, void* bot){
 	jsbot *shotBot = reinterpret_cast<jsbot*>(bot);
@@ -195,6 +268,7 @@ int game::shoot(double ang, double dist, void* bot){
 				
 				self->bullets[i].ison = 1;
 				self->bullets[i].pos = self->bots[i]->pos;
+				
 				//For what ever reason sin and cos are backwards
 				self->bullets[i].dest.x = cos(ang)*dist + self->bots[i]->pos.x;
 				self->bullets[i].dest.y = sin(ang)*dist + self->bots[i]->pos.y;
@@ -211,11 +285,12 @@ int game::shoot(double ang, double dist, void* bot){
 	}
 	return -1;
 }
+
 //Called when a bot is scanning
 double game::scan(double ang, double width, void* bot){
 	jsbot *scanBot = reinterpret_cast<jsbot*>(bot);
 	for(int i = 0; i<self->numBots; i++){
-		if(self->bots[i]!=scanBot){
+		if(self->bots[i] != scanBot && self->bots[i]->health > 0){
 			double angMin = ang - width/2;
 			double angMax = ang + width/2;
 			double angBot = scanBot->pos.angle(self->bots[i]->pos);
@@ -243,7 +318,7 @@ double game::scan(double ang, double width, void* bot){
 			while(angMin > angMax){
 				angMax = angMax+2*M_PI;
 			}
-			if(angMin <= angBot && angBot <= angMax){
+			if(angMin <= angBot && angBot <= angMax && scanBot->pos.distance(self->bots[i]->pos) < 80){
 				return scanBot->pos.distance(self->bots[i]->pos);
 			}else{
 				return 0.0;
