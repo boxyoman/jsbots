@@ -1,3 +1,3 @@
 #JsBots
 
-Trying to remake this with JavaScriptcore
+Trying to remake this with JavaScriptCore
