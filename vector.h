@@ -11,7 +11,7 @@
 	@property (nonatomic, readonly) float length;
 	+(id) vectorWithX: (float) x Y:(float) y; 
 	-(jsvector *) add: (jsvector*) b;
-	-(jsvector *) unitVector;
+	-(jsvector *) unit;
 	-(jsvector *) dotProduct: (jsvector *) b;
 	-(jsvector *) crossProduct: (jsvector *) b;
 @end

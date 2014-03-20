@@ -26,10 +26,10 @@
 -(float) length{
 	return sqrt(_x*_x+_y*_y);
 }
--(jsvector *) unitVector{
-	float leng = self.length;
-
-	return self;
+-(jsvector *) unit{
+	float length = self.length;
+	
+	return [[jsvector alloc] initWithX: _x/length Y: _y/length];
 }
 -(jsvector *) dotProduct: (jsvector *) b{
 	return self;
