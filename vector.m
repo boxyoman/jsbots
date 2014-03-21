@@ -1,7 +1,7 @@
 #import "vector.h"
 #include <math.h>
 
-@implementation jsvector
+@implementation jsVector
 @synthesize x=_x;
 @synthesize y=_y;
 
@@ -15,26 +15,26 @@
 }
 
 +(id) vectorWithX: (float) x Y:(float) y{
-	return [[jsvector alloc] initWithX: x Y: y];
+	return [[jsVector alloc] initWithX: x Y: y];
 }	
 
 
--(jsvector *) add: (jsvector*) b{
-	return [[jsvector alloc] initWithX: self.x+b.x Y: self.y+b.y];
+-(jsVector *) add: (jsVector*) b{
+	return [[jsVector alloc] initWithX: self.x+b.x Y: self.y+b.y];
 }
 
 -(float) length{
 	return sqrt(_x*_x+_y*_y);
 }
--(jsvector *) unit{
+-(jsVector *) unit{
 	float length = self.length;
 	
-	return [[jsvector alloc] initWithX: _x/length Y: _y/length];
+	return [[jsVector alloc] initWithX: _x/length Y: _y/length];
 }
--(jsvector *) dotProduct: (jsvector *) b{
+-(jsVector *) dotProduct: (jsVector *) b{
 	return self;
 }
--(jsvector *) crossProduct: (jsvector *) b{
+-(jsVector *) crossProduct: (jsVector *) b{
 	return self;
 }
 
