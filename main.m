@@ -5,6 +5,6 @@
 #import "game.h"
 
 int main(int argc, char* argv[]) {
-	[[jsGame alloc] init];
+	[[jsGame alloc] initWithArgc: argc Argv: argv];
 	return 0;
 }

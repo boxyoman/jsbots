@@ -5,6 +5,8 @@
 @implementation jsBot
 @synthesize jsContext=_jsContext;
 @synthesize position=_position;
+@synthesize speed = _speed;
+@synthesize angle = _angle;
 
 - (id) initWithFile: (NSString *) botFile VirtualMachine: (JSVirtualMachine*) machine Position: (jsVector*) pos{
 	self = [[jsBot alloc] init];
@@ -31,11 +33,9 @@
 	return self;
 }
 
-- (id) initWithFile: (NSString *) botFile VirtualMachine: (JSVirtualMachine*) machine{
-	//jsVector* test = [jsVector vectorWithX: 0 Y:0];
-	//return [self initWithFile: botFile VirtualMachine: machine Position: test];
-}
+
 -(void) driveSpeed: (int) speed Angle: (int) angle{
-	
+	_speed = speed;
+	_angle = angle;
 }
 @end

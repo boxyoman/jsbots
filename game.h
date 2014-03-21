@@ -11,7 +11,8 @@
 	float _x,_y;
 	JSVirtualMachine *virtualMachine;
 	NSArray *jsBots;
+	int numberOfBots;
 }
-- (id) init;
+- (id) initWithArgc: (int) argc Argv: (char**) argv;
 @end
 #endif

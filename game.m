@@ -3,14 +3,24 @@
 #include <math.h>
 
 @implementation jsGame
--(id) init{
+-(id) initWithArgc: (int) argc Argv: (char**) argv{
 	self = [super init];
 	if(self){
 		virtualMachine = [[JSVirtualMachine alloc] init];
-		jsVector* test = [[jsVector alloc] initWithX: 3 Y:4];
-		NSLog(@"%f", test.length);
-		jsBot* bot1 = [[jsBot alloc] initWithFile: @"test.js" VirtualMachine: virtualMachine Position: test];
-		jsBots = [NSArray arrayWithObjects: bot1, nil];
+		NSLog(@"For some odd reason I need this here...");
+		
+		//make bots based off of arguments to the program
+		numberOfBots = argc;
+		jsBots = [NSArray arrayWithObjects: nil];
+		for(int i = 1; i<numberOfBots; i++){
+			
+			NSString* botFileName = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
+			
+			jsVector* position1 = [[jsVector alloc] initWithX: 3 Y:4];
+			jsBot* bot = [[jsBot alloc] initWithFile: botFileName VirtualMachine: virtualMachine Position: position1];
+			
+			jsBots = [jsBots arrayByAddingObject: bot];
+		}
 	}
 	return self;
 }
