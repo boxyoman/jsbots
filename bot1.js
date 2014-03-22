@@ -1,2 +1,5 @@
-var test = Vector.vectorWithXY(8, 6);
-test.length;
+console.log("PI - " + Math.PI);
+
+function main(){
+	
+}

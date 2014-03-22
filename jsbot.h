@@ -6,18 +6,21 @@
 #include <stdbool.h>
 #import <JavaScriptCore/JavaScriptCore.h> 
 
-@class jsBot, jsVector;
+@class jsBot, jsVector, jsConsole;
 
 @protocol BotJSExport <JSExport>
 	-(void) driveSpeed: (int) speed Angle: (int) angle;
-	@property (nonatomic, strong) jsVector* position;
-	@property (nonatomic) int speed;
-	@property (nonatomic) int angle;
+	@property (nonatomic, strong, readonly) jsVector* position;
+	@property (nonatomic, readonly) int speed;
+	@property (nonatomic, readonly) int angle;
+	@property (nonatomic, copy) NSString* name;
 @end
 
 @interface jsBot: NSObject <BotJSExport>{
+	jsConsole* _console;
 	JSContext* _jsContext;
 	jsVector* _position;
+	NSString* _name;
 	int _speed;
 	int _angle;
 	float _x,_y;

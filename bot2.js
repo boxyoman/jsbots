@@ -1,2 +1,3 @@
-var test = Vector.vectorWithXY(3, 4);
-test.length;
+console.log("Before name change");
+mybot.name = "boxyoman";
+console.log("After name change");

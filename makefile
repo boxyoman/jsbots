@@ -1,6 +1,6 @@
-CC = gcc
+CC = clang
 CFLAGS = -Wall
-OBJ = vector.o jsbot.o game.o
+OBJ = vector.o jsbot.o game.o console.o
 FRAMEWORKS = -framework OpenGL -framework JavaScriptCore -framework Foundation
 
 jsbots: main.m $(OBJ)
