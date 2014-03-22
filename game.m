@@ -7,7 +7,6 @@
 	self = [super init];
 	if(self){
 		virtualMachine = [[JSVirtualMachine alloc] init];
-		NSLog(@"For some odd reason I need this here...");
 	
 		//make bots based off of arguments to the program
 		numberOfBots = argc;
