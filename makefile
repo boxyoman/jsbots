@@ -1,7 +1,7 @@
 CC = clang
 CFLAGS = -Wall -fobjc-arc
 OBJ = vector.o jsbot.o game.o console.o
-FRAMEWORKS = -framework OpenGL -framework JavaScriptCore -framework Foundation
+FRAMEWORKS = -framework OpenGL -framework JavaScriptCore -framework Foundation -framework Cocoa -framework AppKit
 
 jsbots: main.m $(OBJ)
 	$(CC) $< -o $@ $(OBJ) $(FRAMEWORKS) $(CFLAGS)
