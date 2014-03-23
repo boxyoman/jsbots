@@ -1,5 +1,3 @@
-console.log("PI - " + Math.PI);
-
-function main(){
-	
-}
+mybot.name = "Jonny"
+var test = Vector.vectorWithXY(3,4);
+console.log("length-"+test.length);
