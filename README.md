@@ -6,7 +6,7 @@ Trying to remake this with JavaScriptCore
 
 Mac OSX 10.9 or newer
 
-##Installing
+##Compiling
 Get the source
 
 	git clone https://github.com/boxyoman/jsbots.git
