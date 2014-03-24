@@ -37,7 +37,7 @@
 	[appMenuItem setSubmenu:appMenu];
 	
 	//Setup a window
-	_window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 600, 400) styleMask:NSTitledWindowMask|NSClosableWindowMask backing:NSBackingStoreBuffered defer:NO];
+	_window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 600, 600) styleMask:NSTitledWindowMask|NSClosableWindowMask backing:NSBackingStoreBuffered defer:NO];
 	[_window cascadeTopLeftFromPoint:NSMakePoint(20,20)];
 	[_window setTitle:appName];
 	[_window setDelegate: self];

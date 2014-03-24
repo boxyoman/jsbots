@@ -9,6 +9,7 @@
 
 @property (nonatomic, weak) jsGame *game;
 - (id) initWithFrame: (NSRect) contentRect;
+- (CVReturn) getFrameForTime: (const CVTimeStamp*) outputTime;
 - (void) drawRect: (NSRect) bounds;
 @end
 #endif
