@@ -9,12 +9,25 @@ Mac OSX 10.9 or newer
 ##Installing
 Get the source
 
-    git clone https://github.com/boxyoman/jsbots.git
+	git clone https://github.com/boxyoman/jsbots.git
+
+Move into the new directory
+
+	cd jsbots
     
 Switch branch
 
-    git checkout JavaScriptCore
+	git checkout JavaScriptCore
 
 Compile
 
-    make
+	make
+
+##Running
+To run
+
+	./jsbots [bot files]
+
+Example
+
+	./jsbots bot1.js bot2.js
