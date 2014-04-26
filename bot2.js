@@ -1,3 +1,4 @@
+mybot.name = "boxyoman";
 var angle = 0;
 
 function main() {

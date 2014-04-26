@@ -12,9 +12,11 @@
 	@property (nonatomic) float x;
 	@property (nonatomic) float y;
 	@property (nonatomic, readonly) float length;
+	@property (nonatomic, readonly) float angle;
 	+(id) vectorWithX: (float) x Y:(float) y;
 	+(id) vectorWithMag: (float) mag angle:(float) ang;
 	-(jsVector *) add: (jsVector*) b;
+	-(jsVector *) sub: (jsVector*) b;
 	-(jsVector *) unit;
 	-(jsVector *) dotProduct: (jsVector*) b;
 	-(jsVector *) crossProduct: (jsVector*) b;

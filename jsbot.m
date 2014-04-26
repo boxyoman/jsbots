@@ -1,6 +1,7 @@
 #import "vector.h"
 #import "jsbot.h"
 #import "console.h"
+#import "game.h"
 #include <math.h>
 
 @implementation jsBot
@@ -9,7 +10,8 @@
 @synthesize speed = _speed;
 @synthesize angle = _angle;
 @synthesize name = _name;
-@synthesize thread;
+@synthesize thread, game;
+@synthesize returnValues, scanAngle, scanResolution;
 
 - (id) initWithFile: (NSString *) botFile Position: (jsVector*) pos{
 	self = [[jsBot alloc] init];
@@ -18,6 +20,7 @@
 		_position = pos;
 		_console = [[jsConsole alloc] init];
 		_name = botFile;
+		returnValues = 0;
 	}
 	return self;
 }
@@ -46,12 +49,22 @@
 }
 
 -(int) scanInDirection: (int) direction WithResolution: (int) resolution{
+	if(resolution < 0) resolution *= -1;
 	if(resolution > 10){
 		resolution = 10;
-	}else if(resolution < -10){
-		resolution = -10;
 	}
-	return 0;
+	while(direction < 0 || direction > 359){
+		if(direction < 0){
+			direction += 360;
+		}
+		if(direction > 359){
+			direction = direction % 360;
+		}
+	}
+	scanResolution = resolution;
+	scanAngle = direction;
+	[game performSelectorOnMainThread:@selector(scan:) withObject:self waitUntilDone:YES];
+	return returnValues;
 }
 
 //This is where the thread for the robot will enter

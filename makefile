@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Wall -fobjc-arc
+CFLAGS = -Wall -fobjc-arc -O3
 OBJ = vector.o jsbot.o game.o console.o myApp.o openGL.o
 FRAMEWORKS = -framework OpenGL -framework JavaScriptCore -framework Foundation -framework Cocoa -framework AppKit -framework QuartzCore
 

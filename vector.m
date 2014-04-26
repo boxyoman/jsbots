@@ -24,9 +24,14 @@
 -(jsVector *) add: (jsVector*) b{
 	return [[jsVector alloc] initWithX: self.x+b.x Y: self.y+b.y];
 }
-
+-(jsVector *) sub: (jsVector*) b{
+	return [[jsVector alloc] initWithX: self.x-b.x Y: self.y-b.y];
+}
 -(float) length{
 	return sqrt(_x*_x+_y*_y);
+}
+-(float) angle{
+	return atan2(_y, _x);
 }
 -(jsVector *) unit{
 	float length = self.length;

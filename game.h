@@ -17,6 +17,7 @@
 @property (nonatomic, readonly) int numberOfBots;
 
 - (void) update;
+- (void) scan: (id) bot;
 - (id) initWithArgc: (int) argc Argv: (char**) argv;
 @end
 #endif

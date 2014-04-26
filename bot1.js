@@ -1,4 +1,4 @@
-mybot.name = "Jonny"
+mybot.name = "Jonny";
 
 var angle = 0;
 

@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #import <JavaScriptCore/JavaScriptCore.h> 
 
-@class jsBot, jsVector, jsConsole;
+@class jsBot, jsVector, jsConsole, jsGame;
 
 @protocol BotJSExport <JSExport>
 	-(void) driveSpeed: (int) speed Angle: (int) angle;
@@ -26,6 +26,10 @@
 	int _angle;
 	float _x,_y;
 }
+@property int scanAngle;
+@property int scanResolution;
+@property (weak) jsGame *game;
+@property int returnValues;	//used when returning values from the main thread
 @property (nonatomic, retain) JSContext* jsContext;
 @property (strong) NSThread *thread;
 - (void) update;

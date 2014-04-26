@@ -7,7 +7,6 @@
 enum{
     ATTRIB_VERTEX,
     ATTRIB_COLOR,
-    ATTRIB_TEXTURE,
     NUM_ATTRIBUTES
 };
 
