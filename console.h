@@ -10,7 +10,11 @@
 	-(void) log: (NSString *) string;
 @end
 
-@interface jsConsole: NSObject <ConsoleJSExport>
+@interface jsConsole: NSObject <ConsoleJSExport>{
+	NSString *botName;
+	NSString *message;
+}
+-(void) logMain;
 @end
 
 #endif

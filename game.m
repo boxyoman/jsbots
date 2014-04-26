@@ -3,10 +3,13 @@
 #include <math.h>
 
 @implementation jsGame
+
+@synthesize jsBots, numberOfBots;
+
 -(id) initWithArgc: (int) argc Argv: (char**) argv{
 	self = [super init];
 	if(self){
-		virtualMachine = [[JSVirtualMachine alloc] init];
+		
 	
 		//make bots based off of arguments to the program
 		numberOfBots = argc;
@@ -16,9 +19,17 @@
 			NSString* botFileName = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
 		
 			jsVector* position = [[jsVector alloc] initWithX: 3 Y:4];
-			jsBot* bot = [[jsBot alloc] initWithFile: botFileName VirtualMachine: virtualMachine Position: position];
+			jsBot* bot = [[jsBot alloc] initWithFile: botFileName Position: position];
 		
 			jsBots = [jsBots arrayByAddingObject: bot];
+		}
+		
+		for(int i=0; i<numberOfBots-1; i++){
+			jsBot* bot = [jsBots objectAtIndex:i];
+			//[bot main];
+			bot.thread = [[NSThread alloc] initWithTarget:bot  selector:@selector(main) object:nil];
+			[bot.thread start];
+			
 		}
 	}
 	return self;

@@ -10,7 +10,8 @@
 
 @protocol BotJSExport <JSExport>
 	-(void) driveSpeed: (int) speed Angle: (int) angle;
-	@property (nonatomic, strong, readonly) jsVector* position;
+	-(int) scanInDirection: (int) direction WithResolution: (int) resolution;
+	@property (strong, readonly) jsVector* position;
 	@property (nonatomic, readonly) int speed;
 	@property (nonatomic, readonly) int angle;
 	@property (nonatomic, copy) NSString* name;
@@ -26,7 +27,9 @@
 	float _x,_y;
 }
 @property (nonatomic, retain) JSContext* jsContext;
-- (id) initWithFile: (NSString *) botFile VirtualMachine: (JSVirtualMachine*) machine Position: (jsVector*) pos;
+@property (strong) NSThread *thread;
+- (id) initWithFile: (NSString *) botFile Position: (jsVector*) pos;
+- (void) main;
 @end
 
 #endif

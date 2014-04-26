@@ -1,6 +1,5 @@
 #import "openGL.h"
-#include <OpenGL/gl.h>
-
+#define DEBUG
 typedef struct _vertexStruct
 {
     GLfloat position[2];
@@ -13,6 +12,10 @@ typedef struct _vertexStruct
 	GLint swapInt = 1;
 	[[self openGLContext] setValues:&swapInt forParameter:NSOpenGLCPSwapInterval];
 	
+	[self makeShaders];
+	
+	
+	//Setup display loop function. Updates with every screen refresh.
 	CVDisplayLinkCreateWithActiveCGDisplays(&displayLink);
 	CVDisplayLinkSetOutputCallback(displayLink, &MyDisplayLinkCallback, (__bridge void *)self);
 	
@@ -22,7 +25,162 @@ typedef struct _vertexStruct
 
 	// Activate the display link
 	CVDisplayLinkStart(displayLink);
+}
+
+-(void) drawBot: (jsBot*) bot{
+	for(int i=0; i<_game.numberOfBots; i++){
+		
+	}
+}
+
+-(void) drawRect: (NSRect) bounds{
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glViewport(0,0,600,600);
+	const vertexStruct vertices[] = {
+		{{ 20,  20}},
+		{{ 20, -20}},
+		{{-20, -20}},
+		{{-20,  20}}
+	};
+	const GLubyte indices[] = {
+		0,1,2,
+		0,2,3
+	};
 	
+	glColor3f(1.0f, 0.85f, 0.35f);
+	
+	const float test[] = {
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	};
+	
+	glUniform1f(uniforms[UNIFORM_SCALE], 1.0/1000.0);
+	glUniformMatrix4fv(uniforms[UNIFORM_PROJECTION_MATRIX], 16, GL_FALSE, test);
+	
+	
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(2, GL_FLOAT, sizeof(vertexStruct), &vertices[0].position);
+ 
+	glDrawElements(GL_TRIANGLE_STRIP, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
+	
+	
+	
+	glFlush();
+}
+
+
+- (BOOL) makeShaders{
+	//Variables for my shaders
+	GLuint vertexShader, fragmentShader;
+	
+	shaderProgram = glCreateProgram();
+	
+	//Complie the shader
+	[self compileShader: &vertexShader type:GL_VERTEX_SHADER file:@"shaders/shader.vsh"];
+	[self compileShader: &fragmentShader type:GL_FRAGMENT_SHADER file:@"shaders/shader.fsh"];
+	
+	//Attach the shader
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	
+	
+	if (![self linkProgram:shaderProgram]) {
+        NSLog(@"Failed to link program: %d", shaderProgram);
+    
+        if (vertexShader) {
+            glDeleteShader(vertexShader);
+            vertexShader = 0;
+        }
+        if (fragmentShader) {
+            glDeleteShader(fragmentShader);
+            vertexShader = 0;
+        }
+        if (shaderProgram) {
+            glDeleteProgram(shaderProgram);
+            shaderProgram = 0;
+        }
+        return NO;
+    }
+	uniforms[UNIFORM_SCALE] = glGetUniformLocation(shaderProgram, "scale");
+	
+	//check to make sure the location were found
+	if(uniforms[UNIFORM_SCALE] == -1){
+		NSLog(@"location scale doesn't exist in vertex shader.");
+	}
+	
+	//Set the shaderProgram
+	glUseProgram(shaderProgram);
+	
+	if (vertexShader) {
+		glDetachShader(shaderProgram, vertexShader);
+		glDeleteShader(vertexShader);
+	}
+	if (fragmentShader) {
+		glDetachShader(shaderProgram, fragmentShader);
+		glDeleteShader(fragmentShader);
+	}
+
+    return YES;
+}
+
+- (BOOL)linkProgram:(GLuint)prog{
+    GLint status;
+    glLinkProgram(prog);
+    
+#if defined(DEBUG)
+    GLint logLength;
+    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
+    if (logLength > 0) {
+        GLchar *log = (GLchar *)malloc(logLength);
+        glGetProgramInfoLog(prog, logLength, &logLength, log);
+        NSLog(@"Program link log:\n%s", log);
+        free(log);
+    }
+#endif
+    
+    glGetProgramiv(prog, GL_LINK_STATUS, &status);
+    if (status == 0) {
+        return FALSE;
+    }
+    
+    return TRUE;
+}
+
+- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file{
+    GLint status;
+    const GLchar *source;
+    
+    source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
+    if (!source) {
+        NSLog(@"Failed to load vertex shader. Source not found.");
+        return NO;
+    }
+    
+    *shader = glCreateShader(type);
+    glShaderSource(*shader, 1, &source, NULL);
+    glCompileShader(*shader);
+    
+#if defined(DEBUG)
+    GLint logLength;
+    glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
+    if (logLength > 0) {
+        GLchar *log = (GLchar *)malloc(logLength);
+        glGetShaderInfoLog(*shader, logLength, &logLength, log);
+        NSLog(@"Shader compile log:\n%s", log);
+        free(log);
+    }
+#endif
+    
+    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
+    if (status == 0) {
+        glDeleteShader(*shader);
+        return NO;
+    }
+    
+    return YES;
 }
 
 - (id) initWithFrame: (NSRect) contentRect{
@@ -40,36 +198,6 @@ static CVReturn MyDisplayLinkCallback(CVDisplayLinkRef displayLink, const CVTime
 	return kCVReturnSuccess;
 }
 
--(void) drawBot: (jsBot*) bot{
-	
-}
-
--(void) drawRect: (NSRect) bounds{
-	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	
-	const vertexStruct vertices[] = {
-		{0.1,  0.1},
-		{0.1, -0.1},
-		{-0.1,-0.1},
-		{-0.1, 0.1}
-	};
-	const GLubyte indices[] = {
-		0,1,2,
-		0,2,3
-	};
-	
-	glColor3f(1.0f, 0.85f, 0.35f);
-	
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2, GL_FLOAT, sizeof(vertexStruct), &vertices[0].position);
- 
-	glDrawElements(GL_TRIANGLE_STRIP, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
-	
-	
-	
-	glFlush();
-}
 
 
 
