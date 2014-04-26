@@ -8,7 +8,7 @@
 
 @class jsVector;
 
-@protocol VectorJSExport <JSExport>
+@protocol VectorJSExport <JSExport, NSCopying>
 	@property (nonatomic) float x;
 	@property (nonatomic) float y;
 	@property (nonatomic, readonly) float length;
@@ -26,5 +26,7 @@
 	float _x,_y;
 }
 - (id) initWithX: (float) x Y: (float) y;
+
+- (id) copyWithZone: (NSZone *) zone;
 @end
 #endif

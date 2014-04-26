@@ -45,4 +45,8 @@
 	return self;
 }
 
+- (id) copyWithZone: (NSZone *) zone{
+	return [[[self class] allocWithZone: zone] initWithX: self.x Y: self.y];
+}
+
 @end

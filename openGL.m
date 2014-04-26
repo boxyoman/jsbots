@@ -42,10 +42,7 @@ const GLubyte indices[] = {
 	glClearColor(0.3, 0.3, 0.3, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glViewport(0,0,600,600);
-	
 	[self drawBots];
-	
-	
 	glFlush();
 	
 	

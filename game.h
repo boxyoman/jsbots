@@ -10,6 +10,7 @@
 @interface jsGame: NSObject {
 	float _x,_y;
 	JSVirtualMachine *virtualMachine;
+	jsBullet *bullets[4];
 	NSArray *jsBots;
 	int numberOfBots;
 }
@@ -18,6 +19,7 @@
 
 - (void) update;
 - (void) scan: (id) bot;
+- (void) shoot: (id) bot;
 - (id) initWithArgc: (int) argc Argv: (char**) argv;
 @end
 #endif

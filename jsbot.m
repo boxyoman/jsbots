@@ -11,7 +11,7 @@
 @synthesize angle = _angle;
 @synthesize name = _name;
 @synthesize thread, game;
-@synthesize returnValues, scanAngle, scanResolution;
+@synthesize returnValues, scanAngle, scanResolution, index, shootArguments;
 
 - (id) initWithFile: (NSString *) botFile Position: (jsVector*) pos{
 	self = [[jsBot alloc] init];
@@ -28,7 +28,6 @@
 - (void) update{
 	_position = [_position add:[jsVector vectorWithMag: _speed/30 angle: _angle*M_PI/180]];
 }
-
 
 -(void) driveSpeed: (int) speed Angle: (int) angle{
 	if(_speed <= 50){
@@ -67,6 +66,21 @@
 	return returnValues;
 }
 
+-(int) shootInDirection: (int) direction atDistance: (int) distance{
+	shootArguments.direction = direction;
+	shootArguments.distance = distance;
+	[game performSelectorOnMainThread:@selector(shoot:) withObject:self waitUntilDone:YES];
+	return self.returnValues;
+}
+
+- (void) makeSimpleFunction {
+	_jsContext[@"shoot"] = ^(int direction, int distance){
+		jsBot *bot = [[JSContext currentContext][@"mybot"] toObjectOfClass: [jsBot class]];
+		[bot shootInDirection: direction atDistance: distance];
+		return 1;
+	};
+}
+
 //This is where the thread for the robot will enter
 - (void) main{
 	//setup js virtual machine
@@ -84,6 +98,7 @@
 	_jsContext[@"mybot"] = self;
 	_jsContext[@"console"] = _console;
 	
+	[self makeSimpleFunction];
 	
 	//Evaluate the script
 	[_jsContext evaluateScript: jsFile];
@@ -92,4 +107,9 @@
 	[main callWithArguments: nil];
 }
 
+@end
+
+
+@implementation jsBullet
+@synthesize fromBot, startPosition, position, shootArguments;
 @end
