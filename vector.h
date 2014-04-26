@@ -13,6 +13,7 @@
 	@property (nonatomic) float y;
 	@property (nonatomic, readonly) float length;
 	+(id) vectorWithX: (float) x Y:(float) y;
+	+(id) vectorWithMag: (float) mag angle:(float) ang;
 	-(jsVector *) add: (jsVector*) b;
 	-(jsVector *) unit;
 	-(jsVector *) dotProduct: (jsVector*) b;

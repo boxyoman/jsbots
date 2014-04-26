@@ -17,7 +17,9 @@
 +(id) vectorWithX: (float) x Y:(float) y{
 	return [[jsVector alloc] initWithX: x Y: y];
 }	
-
++(id) vectorWithMag: (float) mag angle:(float) ang{
+	return [[jsVector alloc] initWithX: mag*cos(ang) Y: mag*sin(ang)];
+}
 
 -(jsVector *) add: (jsVector*) b{
 	return [[jsVector alloc] initWithX: self.x+b.x Y: self.y+b.y];

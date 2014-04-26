@@ -15,6 +15,8 @@
 }
 @property (nonatomic, readonly) NSArray *jsBots;
 @property (nonatomic, readonly) int numberOfBots;
+
+- (void) update;
 - (id) initWithArgc: (int) argc Argv: (char**) argv;
 @end
 #endif

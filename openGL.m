@@ -47,6 +47,9 @@ const GLubyte indices[] = {
 	
 	
 	glFlush();
+	
+	
+	[_game update];
 }
 
 

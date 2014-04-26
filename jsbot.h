@@ -12,8 +12,8 @@
 	-(void) driveSpeed: (int) speed Angle: (int) angle;
 	-(int) scanInDirection: (int) direction WithResolution: (int) resolution;
 	@property (strong, readonly) jsVector* position;
-	@property (nonatomic, readonly) int speed;
-	@property (nonatomic, readonly) int angle;
+	@property (readonly) int speed;
+	@property (readonly) int angle;
 	@property (nonatomic, copy) NSString* name;
 @end
 
@@ -28,6 +28,7 @@
 }
 @property (nonatomic, retain) JSContext* jsContext;
 @property (strong) NSThread *thread;
+- (void) update;
 - (id) initWithFile: (NSString *) botFile Position: (jsVector*) pos;
 - (void) main;
 @end

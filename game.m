@@ -35,4 +35,11 @@
 	return self;
 }
 
+- (void) update{
+	for(int i=0; i<numberOfBots; i++){
+		jsBot* bot = [jsBots objectAtIndex:i];
+		[bot update];
+	}
+}
+
 @end
