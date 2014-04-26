@@ -7,10 +7,10 @@ typedef struct _vertexStruct
 } vertexStruct;
 
 const vertexStruct vertices[] = {
-	{{ 20,  20}},
-	{{ 20, -20}},
-	{{-20, -20}},
-	{{-20,  20}}
+	{{ 10,  10}},
+	{{ 10, -10}},
+	{{-10, -10}},
+	{{-10,  10}}
 };
 const GLubyte indices[] = {
 	0,1,2,
@@ -39,7 +39,7 @@ const GLubyte indices[] = {
 }
 
 -(void) drawRect: (NSRect) bounds{
-	glClearColor(0, 0, 0, 0);
+	glClearColor(0.3, 0.3, 0.3, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glViewport(0,0,600,600);
 	
@@ -121,7 +121,7 @@ const GLubyte indices[] = {
 	glUseProgram(shaderProgram);
 	
 	//set up the scale of the play feild
-	glUniform1f(uniforms[UNIFORM_SCALE], 1.0/1000.0);
+	glUniform1f(uniforms[UNIFORM_SCALE], 1.0/500.0);
 	
 	
 	if (vertexShader) {

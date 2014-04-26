@@ -23,12 +23,12 @@
 }
 
 - (void) update{
-	_position = [_position add:[jsVector vectorWithMag: _speed/100 angle: _angle*M_PI/180]];
+	_position = [_position add:[jsVector vectorWithMag: _speed/30 angle: _angle*M_PI/180]];
 }
 
 
 -(void) driveSpeed: (int) speed Angle: (int) angle{
-	if(_speed < 50){
+	if(_speed <= 50){
 		if(speed > 100){
 			speed = 100;
 		}

@@ -1,9 +1,12 @@
-console.log("Before name change");
-mybot.name = "boxyoman";
-console.log("After name change");
+var angle = 0;
 
 function main() {
 	while(1){
-		mybot.driveSpeedAngle(100, 90);
+		if(mybot.position.y > 950){
+			angle = 270;
+		}else if(mybot.position.y < 50){
+			angle = 90;
+		}
+		mybot.driveSpeedAngle(50, angle);
 	}
 }

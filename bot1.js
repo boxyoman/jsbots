@@ -1,9 +1,14 @@
 mybot.name = "Jonny"
-var test = Vector.vectorWithXY(3,4);
-console.log("length-"+test.length);
+
+var angle = 0;
 
 function main() {
 	while(1){
-		mybot.driveSpeedAngle(100, 45);
+		if(mybot.position.x > 950){
+			angle = 180;
+		}else if(mybot.position.x < 50){
+			angle = 0;
+		}
+		mybot.driveSpeedAngle(50, angle);
 	}
 }
