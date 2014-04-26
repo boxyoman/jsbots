@@ -6,12 +6,20 @@ typedef struct _vertexStruct
     GLfloat position[2];
 } vertexStruct;
 
-const vertexStruct vertices[] = {
+const vertexStruct verticesBot[] = {
 	{{ 10,  10}},
 	{{ 10, -10}},
 	{{-10, -10}},
 	{{-10,  10}}
 };
+
+const vertexStruct verticesBullet[] = {
+	{{ 5,  5}},
+	{{ 5, -5}},
+	{{-5, -5}},
+	{{-5,  5}}
+};
+
 const GLubyte indices[] = {
 	0,1,2,
 	0,2,3
@@ -32,9 +40,27 @@ const GLubyte indices[] = {
 	
 	
 		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(2, GL_FLOAT, sizeof(vertexStruct), &vertices[0].position);
+		glVertexPointer(2, GL_FLOAT, sizeof(vertexStruct), &verticesBot[0].position);
  
 		glDrawElements(GL_TRIANGLE_STRIP, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
+	}
+}
+
+- (void) drawBullets{
+	for(int i=0; i<_game.numberOfBots; i++){
+		jsBullet* bullet = [_game getBullet:i];
+		if(bullet != NULL){
+			glColor3f(1.0f, 0.85f, 0.35f);
+		
+			jsVector *vector = bullet.position;
+			glUniform2f(uniforms[UNIFORM_POSITION], vector.x, vector.y);
+	
+	
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(2, GL_FLOAT, sizeof(vertexStruct), &verticesBullet[0].position);
+ 
+			glDrawElements(GL_TRIANGLE_STRIP, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
+		}
 	}
 }
 
@@ -43,8 +69,8 @@ const GLubyte indices[] = {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glViewport(0,0,600,600);
 	[self drawBots];
+	[self drawBullets];
 	glFlush();
-	
 	
 	[_game update];
 }

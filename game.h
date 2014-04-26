@@ -17,6 +17,7 @@
 @property (nonatomic, readonly) NSArray *jsBots;
 @property (nonatomic, readonly) int numberOfBots;
 
+- (jsBullet *)getBullet: (int) index;
 - (void) update;
 - (void) scan: (id) bot;
 - (void) shoot: (id) bot;

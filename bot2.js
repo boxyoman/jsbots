@@ -1,5 +1,5 @@
 mybot.name = "boxyoman";
-var angle = 0;
+var angle = 90;
 
 function main() {
 	while(1){
@@ -8,6 +8,6 @@ function main() {
 		}else if(mybot.position.y < 50){
 			angle = 90;
 		}
-		mybot.driveSpeedAngle(50, angle);
+		drive(50, angle);
 	}
 }

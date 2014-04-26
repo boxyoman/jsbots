@@ -40,7 +40,9 @@
 	return self;
 }
 
-
+- (jsBullet *)getBullet: (int) index{
+	return bullets[index];
+}
 
 //issue will come up when scan are around 0 and 360
 - (void) scan: (jsBot*) bot{
@@ -77,6 +79,14 @@
 	for(int i=0; i<numberOfBots; i++){
 		jsBot* bot = [jsBots objectAtIndex:i];
 		[bot update];
+		
+		if(bullets[i] != NULL){
+			
+			bullets[i].position = [bullets[i].position add:[jsVector vectorWithMag: 5 angle:bullets[i].shootArguments.direction]];
+			if([bullets[i].position sub:bullets[i].startPosition].length >= bullets[i].shootArguments.distance){
+				bullets[i] = NULL;
+			}
+		}
 	}
 }
 
