@@ -67,17 +67,34 @@
 }
 
 -(int) shootInDirection: (int) direction atDistance: (int) distance{
+	
+	//setup some arguments to be sent
 	shootArguments.direction = direction;
 	shootArguments.distance = distance;
+	
+	//call the shoot function on the main thread
 	[game performSelectorOnMainThread:@selector(shoot:) withObject:self waitUntilDone:YES];
 	return self.returnValues;
 }
 
 - (void) makeSimpleFunction {
 	_jsContext[@"shoot"] = ^(int direction, int distance){
+		//get the robot object. If I don't do this I end up with a retain cycle
 		jsBot *bot = [[JSContext currentContext][@"mybot"] toObjectOfClass: [jsBot class]];
-		[bot shootInDirection: direction atDistance: distance];
-		return 1;
+		//call the function to shoot
+		return [bot shootInDirection: direction atDistance: distance];
+	};
+	_jsContext[@"scan"] = ^(int direction, int resolution){
+		//get the robot object. If I don't do this I end up with a retain cycle
+		jsBot *bot = [[JSContext currentContext][@"mybot"] toObjectOfClass: [jsBot class]];
+		//call the function to shoot
+		return [bot scanInDirection: direction WithResolution: resolution];
+	};
+	_jsContext[@"drive"] = ^(int speed, int angle){
+		//get the robot object. If I don't do this I end up with a retain cycle
+		jsBot *bot = [[JSContext currentContext][@"mybot"] toObjectOfClass: [jsBot class]];
+		//call the function to shoot
+		return [bot driveSpeed: speed Angle: angle];
 	};
 }
 
