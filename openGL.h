@@ -12,8 +12,7 @@ enum{
 };
 
 enum{
-    UNIFORM_MODELVIEW_MATRIX,
-    UNIFORM_PROJECTION_MATRIX,
+    UNIFORM_POSITION,
 	UNIFORM_SCALE,
     NUM_UNIFORMS
 };
@@ -26,8 +25,12 @@ enum{
 }
 
 @property (nonatomic, weak) jsGame *game;
+
+- (void) drawBots;
+- (void) drawRect: (NSRect) bounds;
+
+
 - (id) initWithFrame: (NSRect) contentRect;
 - (CVReturn) getFrameForTime: (const CVTimeStamp*) outputTime;
-- (void) drawRect: (NSRect) bounds;
 @end
 #endif

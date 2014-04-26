@@ -1,12 +1,54 @@
 #import "openGL.h"
-#define DEBUG
+#import "vector.h"
+
 typedef struct _vertexStruct
 {
     GLfloat position[2];
 } vertexStruct;
 
+const vertexStruct vertices[] = {
+	{{ 20,  20}},
+	{{ 20, -20}},
+	{{-20, -20}},
+	{{-20,  20}}
+};
+const GLubyte indices[] = {
+	0,1,2,
+	0,2,3
+};
+
 @implementation MyOpenGLView
 @synthesize game = _game;
+
+- (void) drawBots{
+	for(int i=0; i<_game.numberOfBots; i++){
+		
+		glColor3f(1.0f, 0.85f, 0.35f);
+		
+		jsBot *bot = [[_game jsBots] objectAtIndex:i];
+		
+		jsVector *vector = bot.position;
+		glUniform2f(uniforms[UNIFORM_POSITION], vector.x, vector.y);
+	
+	
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(2, GL_FLOAT, sizeof(vertexStruct), &vertices[0].position);
+ 
+		glDrawElements(GL_TRIANGLE_STRIP, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
+	}
+}
+
+-(void) drawRect: (NSRect) bounds{
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glViewport(0,0,600,600);
+	
+	[self drawBots];
+	
+	
+	glFlush();
+}
+
 
 - (void) prepareOpenGL{
 	GLint swapInt = 1;
@@ -26,51 +68,6 @@ typedef struct _vertexStruct
 	// Activate the display link
 	CVDisplayLinkStart(displayLink);
 }
-
--(void) drawBot: (jsBot*) bot{
-	for(int i=0; i<_game.numberOfBots; i++){
-		
-	}
-}
-
--(void) drawRect: (NSRect) bounds{
-	glClearColor(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	glViewport(0,0,600,600);
-	const vertexStruct vertices[] = {
-		{{ 20,  20}},
-		{{ 20, -20}},
-		{{-20, -20}},
-		{{-20,  20}}
-	};
-	const GLubyte indices[] = {
-		0,1,2,
-		0,2,3
-	};
-	
-	glColor3f(1.0f, 0.85f, 0.35f);
-	
-	const float test[] = {
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	};
-	
-	glUniform1f(uniforms[UNIFORM_SCALE], 1.0/1000.0);
-	glUniformMatrix4fv(uniforms[UNIFORM_PROJECTION_MATRIX], 16, GL_FALSE, test);
-	
-	
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2, GL_FLOAT, sizeof(vertexStruct), &vertices[0].position);
- 
-	glDrawElements(GL_TRIANGLE_STRIP, sizeof(indices)/sizeof(GLubyte), GL_UNSIGNED_BYTE, indices);
-	
-	
-	
-	glFlush();
-}
-
 
 - (BOOL) makeShaders{
 	//Variables for my shaders
@@ -104,15 +101,25 @@ typedef struct _vertexStruct
         }
         return NO;
     }
+	
 	uniforms[UNIFORM_SCALE] = glGetUniformLocation(shaderProgram, "scale");
+	uniforms[UNIFORM_POSITION] = glGetUniformLocation(shaderProgram, "realPosition");
 	
 	//check to make sure the location were found
 	if(uniforms[UNIFORM_SCALE] == -1){
 		NSLog(@"location scale doesn't exist in vertex shader.");
 	}
 	
+	if(uniforms[UNIFORM_POSITION] == -1){
+		NSLog(@"location realPosition doesn't exist in vertex shader.");
+	}
+	
 	//Set the shaderProgram
 	glUseProgram(shaderProgram);
+	
+	//set up the scale of the play feild
+	glUniform1f(uniforms[UNIFORM_SCALE], 1.0/1000.0);
+	
 	
 	if (vertexShader) {
 		glDetachShader(shaderProgram, vertexShader);

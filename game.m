@@ -12,19 +12,19 @@
 		
 	
 		//make bots based off of arguments to the program
-		numberOfBots = argc;
+		numberOfBots = argc-1;
 		jsBots = [NSArray arrayWithObjects: nil];
-		for(int i = 1; i<numberOfBots && i <= 4; i++){
+		for(int i = 1; i<=numberOfBots && i <= 4; i++){
 		
 			NSString* botFileName = [NSString stringWithCString:argv[i] encoding:NSUTF8StringEncoding];
 		
-			jsVector* position = [[jsVector alloc] initWithX: 3 Y:4];
+			jsVector* position = [[jsVector alloc] initWithX: 20 Y:20];
 			jsBot* bot = [[jsBot alloc] initWithFile: botFileName Position: position];
 		
 			jsBots = [jsBots arrayByAddingObject: bot];
 		}
 		
-		for(int i=0; i<numberOfBots-1; i++){
+		for(int i=0; i<numberOfBots; i++){
 			jsBot* bot = [jsBots objectAtIndex:i];
 			//[bot main];
 			bot.thread = [[NSThread alloc] initWithTarget:bot  selector:@selector(main) object:nil];
